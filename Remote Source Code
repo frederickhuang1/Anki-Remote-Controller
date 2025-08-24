@@ -1,0 +1,127 @@
+
+#include "BleKeyboard.h"
+BleKeyboard bleKeyboard("Anki Remote", "whatever name"); //Names device and manufacturer
+
+int ledPin5 = 6;
+int ledPin4 = 5;
+int ledPin3 = 4;
+int ledPin2 = 3;
+int ledPin1 = 2;
+
+int button5pin = 12;
+int button4pin = 11;
+int button3pin = 10;
+int button2pin = 9;
+int button1pin = 8;
+
+const uint16_t DEBOUNCE_MS = 25;
+
+// Track last stable states (INPUT_PULLUP → true means "not pressed")
+bool last1 = true, last2 = true, last3 = true, last4 = true, last5 = true;
+uint32_t t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0;
+
+void setup() {
+  //Set pins for led flash to confirm switch press
+  pinMode(ledPin5, OUTPUT);
+  pinMode(ledPin4, OUTPUT);
+  pinMode(ledPin3, OUTPUT);
+  pinMode(ledPin2, OUTPUT);
+  pinMode(ledPin1, OUTPUT);
+
+  //set pins for button presses to the an internal pull up resistor
+  //tracks actual voltage input of "high" or 'low' to control led.
+  pinMode(button5pin, INPUT_PULLUP);
+  pinMode(button4pin, INPUT_PULLUP);
+  pinMode(button3pin, INPUT_PULLUP);
+  pinMode(button2pin, INPUT_PULLUP);
+  pinMode(button1pin, INPUT_PULLUP);
+
+  // open serial monitor at sampling rate of 9600 baud.
+  Serial.begin(9600);
+  Serial.println("Starting BLE Connection.");
+
+  // open keyboard.
+  bleKeyboard.begin();
+}
+
+// creates an internal link through "static" that tells compiler to copy paste the following script, indicated by "inline"
+// below function does nothing and is only meant to run without returning any computed value though 'void' with a defined function 'pulse' with pin integer as an argument.
+static inline void pulse(int pin) {
+  digitalWrite(pin, HIGH);
+  delay(30);
+  digitalWrite(pin, LOW);
+}
+
+void loop() {
+  uint32_t now = millis();
+
+  // Read buttons
+  bool b1 = digitalRead(button1pin);
+  bool b2 = digitalRead(button2pin);
+  bool b3 = digitalRead(button3pin);
+  bool b4 = digitalRead(button4pin);
+  bool b5 = digitalRead(button5pin);
+
+  //  Button 1
+  if (b1 != last1 && (now - t1) >= DEBOUNCE_MS && bleKeyboard.isConnected()) {
+    t1 = now; last1 = b1;
+    if (b1 == LOW) {                   // pressed
+      pulse(ledPin1);
+      bleKeyboard.press('1');             // send press only once
+      Serial.println("1");             // optional: one line per event
+    } else {                           // released
+      bleKeyboard.release('1');           // send release once
+    }
+  }
+
+  // Button 2 
+  if (b2 != last2 && (now - t2) >= DEBOUNCE_MS && bleKeyboard.isConnected()) {
+    t2 = now; last2 = b2;
+    if (b2 == LOW) {
+      pulse(ledPin2);
+      bleKeyboard.press('2');
+      Serial.println("2");
+    } else {
+      bleKeyboard.release('2');
+    }
+  }
+
+  // Button 3
+  if (b3 != last3 && (now - t3) >= DEBOUNCE_MS && bleKeyboard.isConnected()) {
+    t3 = now; last3 = b3;
+    if (b3 == LOW) {
+      pulse(ledPin3);
+      bleKeyboard.press('3');
+      Serial.println("3");
+    } else {
+      bleKeyboard.release('3');
+    }
+  }
+
+  // Button 4 
+  if (b4 != last4 && (now - t4) >= DEBOUNCE_MS && bleKeyboard.isConnected()) {
+    t4 = now; last4 = b4;
+    if (b4 == LOW) {
+      pulse(ledPin4);
+      bleKeyboard.press('4');
+      Serial.println("4");
+    } else {
+      bleKeyboard.release('4');
+    }
+  }
+
+  // Button 5
+  if (b5 != last5 && (now - t5) >= DEBOUNCE_MS && bleKeyboard.isConnected()) {
+    t5 = now; last5 = b5;
+    if (b5 == LOW) {                   // pressed
+      pulse(ledPin5);
+      bleKeyboard.press(' ');             // send press only once
+      Serial.println("space");             // optional: one line per event
+    } else {                           // released
+      bleKeyboard.release(' ');           // send release once
+    }
+  }
+
+  // Tiny yield; avoid long blocking delays in loop
+  delay(1);
+}
