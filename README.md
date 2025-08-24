@@ -9,4 +9,6 @@ Students have been adopting the use of remote controllers such as the 8bitdo Zer
 
 With where the project stands at the moment, further developments will include the introduction of features such as a MOSFET for latching circuits to turn buttons into a electronic switch that can regulate wireless connection while being sustained by external power. Wireless power transfer methods will also be explored to charge a battery running this device. While it's an overengineered remote you instead can buy for $20 online, it serves as a proof of concept for learning ECE fundamentals.
 
+As a side note i might also consider designing and making a pcb for this it really isn't that much more work to do this (gratned i need to find an autodek fusion subscription or something similar).
+
 Levy, J., Ely, K., Lagasca, G., Kausar, H., Patel, D., Andersen, S., Georges, C., & Simanton, E. (2023). Exploring Anki Usage Among First-Year Medical Students During an Anatomy & Physiology Course: A Pilot Study. Journal of medical education and curricular development, 10, 23821205231205389. https://doi.org/10.1177/23821205231205389
